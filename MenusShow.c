@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <string.h>
+ 
+int loginAdministrador();
+void menuAdministrador();
 
-int main() {
-    menuPrincipal();
-    return 0;
-}
     // Função que exibe o menu principal do sistema
 void menuPrincipal() {
     int opcao;
