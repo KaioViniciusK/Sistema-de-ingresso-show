@@ -1,8 +1,12 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h> 
+#include <locale.h>
+#include "MenusShow.h"
  
 int loginAdministrador();
 void menuAdministrador();
+void listarShows();
 
     // Função que exibe o menu principal do sistema
 void menuPrincipal() {
@@ -23,7 +27,7 @@ void menuPrincipal() {
 
         switch(opcao) {
             case 1:
-                // listarShows();
+                listarShows();
                 break;
             case 2:
                 // pesquisarShow();
@@ -106,4 +110,65 @@ int loginAdministrador() {
         printf("\nUsuario ou senha incorretos!\n");
         return 0; // falhou
     }
+}
+
+
+
+void listarShows() {
+    FILE *arquivo = fopen("showsCadastrados.txt", "r");
+    Show showAtual; 
+    int showEncontrado = 0; 
+
+    if (arquivo == NULL) {
+        printf("\nERRO: Nao foi possivel abrir o arquivo 'showsCadastrados.txt'.\n");
+        printf("Verifique se o arquivo esta no local correto.\n");
+        printf("------------------------------------------\n");
+        
+        // Pausa para o usuário ler o erro
+        printf("\nPressione Enter para voltar ao menu...");
+        getchar(); 
+        getchar();
+        return; // Sai da função
+    }
+  
+
+    printf("\n------------------------------------------\n");
+    printf("         Lista de Shows Cadastrados\n");
+    printf("------------------------------------------\n");
+
+    while (
+        fscanf(arquivo, "Artista: %[^\n]\n", showAtual.artista) == 1 &&
+        fscanf(arquivo, "Local: %[^\n]\n", showAtual.local) == 1 &&
+        fscanf(arquivo, "Data: %[^\n]\n", showAtual.data) == 1 &&
+        fscanf(arquivo, "Horario: %[^\n]\n", showAtual.horario) == 1 &&
+        fscanf(arquivo, "Valor do ingresso: %f\n", &showAtual.valor) == 1 &&
+        fscanf(arquivo, "Ingressos disponíveis: %d\n", &showAtual.ingressosDisponiveis) == 1 &&
+        fscanf(arquivo, "Categoria: %[^\n]\n\n", showAtual.categoria) == 1
+    ) {
+        showEncontrado = 1; // Marca que pelo menos um show foi lido e impresso
+
+        // Imprime os dados lidos do "showAtual"
+        printf("Artista: %s\n", showAtual.artista);
+        printf("Local: %s\n", showAtual.local);
+        printf("Data: %s\n", showAtual.data);
+        printf("Horário: %s\n", showAtual.horario);
+        printf("Valor: R$ %.2f\n", showAtual.valor);
+        printf("Ingressos: %d\n", showAtual.ingressosDisponiveis);
+        printf("Categoria: %s\n", showAtual.categoria);
+        printf("------------------------------------------\n");
+    }
+
+  
+    fclose(arquivo);
+
+ 
+    if (!showEncontrado) {
+        printf("\nNenhum show cadastrado no momento.\n");
+        printf("------------------------------------------\n");
+    }
+
+   
+    printf("\nPressione Enter para voltar ao menu...");
+    getchar(); // Limpa o buffer de entrada (pode ter um \n do scanf anterior)
+    getchar(); 
 }
