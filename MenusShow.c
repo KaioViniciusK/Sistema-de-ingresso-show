@@ -15,15 +15,6 @@ void comprarIngresso() {
     printf("\n[EM DESENVOLVIMENTO] comprarIngresso()\n");
 }
 
-void sairPrograma() {
-    printf("\nEncerrando o programa...\n");
-    exit(0);
-}
-
-void atualizarShow() {
-    printf("\n[EM DESENVOLVIMENTO] atualizarShow()\n");
-}
-
 void consultarHistorico() {
     printf("\n[EM DESENVOLVIMENTO] consultarHistorico()\n");
 }
@@ -32,25 +23,8 @@ void cancelarVenda() {
     printf("\n[EM DESENVOLVIMENTO] cancelarVenda()\n");
 }
 
-void loginAdministrador() {
-    int senha;
 
-    printf("\n===== LOGIN ADMINISTRADOR =====\n");
-    printf("Digite a senha: ");
-    scanf("%d", &senha);
-
-    if (senha == 123) {
-        printf("\nLogin bem-sucedido!\n");
-        menuAdministrador();
-    } else {
-        printf("\nSenha incorreta!\n");
-    }
-}
-
-
-
-
-    // Fun��o que exibe o menu principal do sistema
+    // Função que exibe o menu principal do sistema
 void menuPrincipal() {
     int escolha;
 
@@ -58,13 +32,14 @@ void menuPrincipal() {
     void (*operacoesUsuario[])() = {listarShows, pesquisarShow, comprarIngresso, loginAdministrador, sairPrograma};
 
     do {
-        printf("\n=========== MENU USUÁRIO ===========\n");
+        system("cls");
+        printf("\n=========== MENU USUARIO ===========\n");
         printf("1 - Listar shows\n");
         printf("2 - Pesquisar show\n");
         printf("3 - Comprar ingresso\n");
         printf("4 - Login como administrador\n");
         printf("5 - Encerrar programa\n");
-        printf("Escolha uma opção: ");
+        printf("Escolha uma opcao: ");
         scanf("%d", &escolha);
 
         if (escolha >= 1 && escolha <= 5) {
@@ -72,7 +47,7 @@ void menuPrincipal() {
         } else {
             printf("\nOpção inválida!\n");
         }
-
+         system("pause");
     } while (escolha != 5);
 }
 
@@ -83,21 +58,128 @@ void menuAdministrador() {
     void (*operacoesAdm[])() = {cadastrarShow, atualizarShow, excluirShow, menuPrincipal};
 
     do {
+        system("cls");
         printf("\n=========== MENU ADMINISTRADOR ===========\n");
         printf("1 - Cadastrar show\n");
         printf("2 - Atualizar show\n");
         printf("3 - Excluir show\n");
-        printf("4 - Voltar ao menu do usuário\n");
-        printf("Escolha uma opção: ");
+        printf("4 - Voltar ao menu do usuario\n");
+        printf("Escolha uma opcao: ");
         scanf("%d", &escolha);
 
         if (escolha >= 1 && escolha <= 6) {
             (*operacoesAdm[escolha - 1])();
         } else {
-            printf("\nOpção inválida!\n");
+            printf("\nOpcao invalida!\n");
         }
-
+         system("pause");
     } while (escolha != 6);
+}
+
+void loginAdministrador() {
+    int senha;
+
+    system("cls");
+    printf("\n===== LOGIN ADMINISTRADOR =====\n");
+    printf("Digite a senha: ");
+    scanf("%d", &senha);
+
+    if (senha == 123) {
+        printf("\nLogin bem-sucedido!\n");
+        menuAdministrador();
+    } else {
+        printf("\nSenha incorreta!\n");
+    }
+
+     system("pause");
+}
+
+void atualizarShow() {
+    FILE *arquivo;
+    IngressoShow *shows = NULL;
+    int total = 0, i, idBusca, encontrado = 0;
+
+    system("cls");
+    printf("\n==== ATUALIZAR SHOW ====\n");
+
+    arquivo = fopen("showdeBola.bin", "r+b");
+    if (arquivo == NULL) {
+        printf("\nNenhum show cadastrado!\n");
+        system("pause");
+        return;
+    }
+
+    // Conta quantos registros existem
+    fseek(arquivo, 0, SEEK_END);
+    long tamanho = ftell(arquivo);
+    total = tamanho / sizeof(IngressoShow);
+    rewind(arquivo);
+
+    // Aloca dinamicamente memória para todos os shows
+    shows = (IngressoShow*) malloc(total * sizeof(IngressoShow));
+    if (shows == NULL) {
+        printf("Erro de memoria!\n");
+        fclose(arquivo);
+        return;
+    }
+
+    fread(shows, sizeof(IngressoShow), total, arquivo);
+
+    printf("\n===== SHOWS DISPONÍVEIS =====\n");
+    for (i = 0; i < total; i++) {
+        if (shows[i].ativo == 1) {
+            printf("ID: %d | Nome: %s | Preco: R$%.2f\n",
+                   shows[i].id, shows[i].nomeEvento, shows[i].preco);
+        }
+    }
+
+    printf("\nDigite o ID do show que deseja atualizar: ");
+    scanf("%d", &idBusca);
+
+    // Procura o show e atualiza
+    for (i = 0; i < total; i++) {
+        if (shows[i].id == idBusca && shows[i].ativo == 1) {
+            encontrado = 1;
+
+            printf("\n--- Editando Show ID %d ---\n", shows[i].id);
+            printf("Nome atual: %s\nNovo nome: ", shows[i].nomeEvento);
+            fflush(stdin);
+            scanf("%s", shows[i].nomeEvento);
+
+            printf("Preço atual: R$%.2f\nNovo preco: ", shows[i].preco);
+            scanf("%f", &shows[i].preco);
+
+            printf("Status atual: %s\n", shows[i].ativo == 1 ? "Ativo" : "Inativo");
+            printf("Novo status (1 - ativo / 0 - inativo): ");
+            scanf("%d", &shows[i].ativo);
+
+            // Atualiza o registro no arquivo
+            fseek(arquivo, i * sizeof(IngressoShow), SEEK_SET);
+            fwrite(&shows[i], sizeof(IngressoShow), 1, arquivo);
+            printf("\nShow atualizado com sucesso!\n");
+            break;
+        }
+    }
+
+    fclose(arquivo);
+    free(shows);
+
+    if (!encontrado) {
+        printf("\nShow com ID %d não encontrado!\n", idBusca);
+
+        // Pergunta se deseja tentar novamente
+        char opc;
+        printf("Deseja tentar outro ID? (S/N): ");
+        fflush(stdin);
+        scanf(" %c", &opc);
+
+        if (opc == 'S' || opc == 's') {
+            atualizarShow(); 
+            return;
+        }
+    }
+
+    system("pause");
 }
 
 
@@ -107,6 +189,7 @@ void listarShows() {
 
     arquivo = fopen("showdeBola.bin", "rb");
 
+    system("cls");
     if (arquivo == NULL) {
         printf("\nNenhum show cadastrado ainda!\n");
         return;
@@ -117,10 +200,11 @@ void listarShows() {
 
     while (fread(&show, sizeof(IngressoShow), 1, arquivo) == 1) {
         if (show.ativo == 1) { // Exibe apenas shows ativos
-            printf("ID: %d | Nome: %s | Preço: %.2f\n", show.id, show.nomeEvento, show.preco);
+            printf("ID: %d | Nome: %s | Preco: R$%.2f\n", show.id, show.nomeEvento, show.preco);
         }
     }
 
+     system("pause");
     fclose(arquivo);
 }
 
@@ -129,6 +213,7 @@ void cadastrarShow(){
     IngressoShow show, aux;
     int idExiste;
 
+    system("cls");
     printf("\n====CADASTRAR SHOW====\n");
     printf("ID: ");
     scanf("%d", &show.id);
@@ -145,7 +230,7 @@ void cadastrarShow(){
     fclose(arquivo);
     //Se ID já existe, não deixa cadastrar.
     if(idExiste == 1){
-        printf("ERRO! Já existe um show com o ID %d", show.id);
+        printf("ERRO! Ja existe um show com o ID %d", show.id);
         menuAdministrador();;
     }
 
@@ -153,15 +238,16 @@ void cadastrarShow(){
     scanf("%s", show.nomeEvento);
     printf("\nPreco: ");
     scanf("%f", &show.preco);
-    printf("\nEstá ativo? 1 - SIM | 2 - NAO: ");
+    printf("\nEsta ativo? 1 - SIM | 2 - NAO: ");
     scanf("%d", &show.ativo);
 
     //Se ID não estiver ocupado, grava normalmente.
     arquivo = fopen("showdeBola.bin", "ab");
     fwrite(&show, sizeof(IngressoShow), 1, arquivo);
 
-    printf("\nSHOW CADASTRADO COM SUCESSO");
+    printf("\nSHOW CADASTRADO COM SUCESSO\n");
 
+    system("pause");
     fclose(arquivo);
 }
 
@@ -170,8 +256,10 @@ void excluirShow(){
     IngressoShow show;
     int idProcurado; 
     int achou = 0;
+
+    system("cls");
     printf("\n====EXCLUIR SHOW====\n");
-    printf("Digite o ID do show que você gostaria de exlcuir: ");
+    printf("Digite o ID do show que voce gostaria de exlcuir: ");
     scanf("%d", &idProcurado);
 
     FILE *arquivo;
@@ -184,13 +272,18 @@ void excluirShow(){
             show.ativo = 0; //Marca como incativo.
             fseek(arquivo, -sizeof(IngressoShow), SEEK_CUR); //Volta 1 registro.
             fwrite(&show, sizeof(IngressoShow), 1, arquivo);
-            printf("\nShow ID %d exlcuído com sucesso!!", idProcurado);
+            printf("\nShow ID %d exlcuido com sucesso!!\n", idProcurado);
             break;
         }
     }
 
     if(!achou) //Caso não encontre o ID.
-        printf("\nShow não encontrado ou já inativo!\n");
+        printf("\nShow nao encontrado ou ja inativo!\n");
 
+    system("pause");
     fclose(arquivo);
 }
+    void sairPrograma() {
+        printf("\nEncerrando o programa...\n");
+        exit(0);
+    }
