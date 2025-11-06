@@ -8,7 +8,7 @@ int loginAdministrador();
 void menuAdministrador();
 void listarShows();
 
-    // Função que exibe o menu principal do sistema
+    // Funï¿½ï¿½o que exibe o menu principal do sistema
 void menuPrincipal() {
     int opcao;
 
@@ -49,7 +49,7 @@ void menuPrincipal() {
     } while (opcao != 5);
 }
 
-    // Menu exclusivo do administrador (aparece só após login)
+    // Menu exclusivo do administrador (aparece sï¿½ apï¿½s login)
 void menuAdministrador() {
     int opcao;
 
@@ -92,7 +92,7 @@ void menuAdministrador() {
     } while (opcao != 6);
 }
 
-    // Função que realiza o login do administrador
+    // Funï¿½ï¿½o que realiza o login do administrador
 int loginAdministrador() {
     char usuario[30], senha[30];
 
@@ -102,7 +102,7 @@ int loginAdministrador() {
     printf("Senha: ");
     scanf("%s", senha);
 
-    // Verifica usuário e senha para liberar acesso ao menu do administrador
+    // Verifica usuï¿½rio e senha para liberar acesso ao menu do administrador
     if (strcmp(usuario, "admin") == 0 && strcmp(senha, "123") == 0) {
         printf("\nLogin efetuado com sucesso!\n");
         return 1; // sucesso
@@ -112,63 +112,24 @@ int loginAdministrador() {
     }
 }
 
+void cadastrarShow(){
+    IngressoShow show;
 
+    printf("\n====CADASTRAR SHOW====\n");
+    printf("ID: ");
+    scanf("%d", &show.id);
+    printf("\nNome: ");
+    scanf("%s", show.nomeEvento);
+    printf("\nPreco: ");
+    scanf("%f", &show.preco);
+    printf("\nEstÃ¡ ativo? 1 - SIM | 2 - NAO: ");
+    scanf("%d", &show.ativo);
 
-void listarShows() {
-    FILE *arquivo = fopen("showsCadastrados.txt", "r");
-    Show showAtual; 
-    int showEncontrado = 0; 
+    FILE *arquivo;
+    arquivo = fopen("showdeBola.bin", "ab");
+    fwrite(&show, sizeof(IngressoShow), 1, arquivo);
 
-    if (arquivo == NULL) {
-        printf("\nERRO: Nao foi possivel abrir o arquivo 'showsCadastrados.txt'.\n");
-        printf("Verifique se o arquivo esta no local correto.\n");
-        printf("------------------------------------------\n");
-        
-        // Pausa para o usuário ler o erro
-        printf("\nPressione Enter para voltar ao menu...");
-        getchar(); 
-        getchar();
-        return; // Sai da função
-    }
-  
+    printf("\nSHOW CADASTRADO COM SUCESSO");
 
-    printf("\n------------------------------------------\n");
-    printf("         Lista de Shows Cadastrados\n");
-    printf("------------------------------------------\n");
-
-    while (
-        fscanf(arquivo, "Artista: %[^\n]\n", showAtual.artista) == 1 &&
-        fscanf(arquivo, "Local: %[^\n]\n", showAtual.local) == 1 &&
-        fscanf(arquivo, "Data: %[^\n]\n", showAtual.data) == 1 &&
-        fscanf(arquivo, "Horario: %[^\n]\n", showAtual.horario) == 1 &&
-        fscanf(arquivo, "Valor do ingresso: %f\n", &showAtual.valor) == 1 &&
-        fscanf(arquivo, "Ingressos disponíveis: %d\n", &showAtual.ingressosDisponiveis) == 1 &&
-        fscanf(arquivo, "Categoria: %[^\n]\n\n", showAtual.categoria) == 1
-    ) {
-        showEncontrado = 1; // Marca que pelo menos um show foi lido e impresso
-
-        // Imprime os dados lidos do "showAtual"
-        printf("Artista: %s\n", showAtual.artista);
-        printf("Local: %s\n", showAtual.local);
-        printf("Data: %s\n", showAtual.data);
-        printf("Horário: %s\n", showAtual.horario);
-        printf("Valor: R$ %.2f\n", showAtual.valor);
-        printf("Ingressos: %d\n", showAtual.ingressosDisponiveis);
-        printf("Categoria: %s\n", showAtual.categoria);
-        printf("------------------------------------------\n");
-    }
-
-  
     fclose(arquivo);
-
- 
-    if (!showEncontrado) {
-        printf("\nNenhum show cadastrado no momento.\n");
-        printf("------------------------------------------\n");
-    }
-
-   
-    printf("\nPressione Enter para voltar ao menu...");
-    getchar(); // Limpa o buffer de entrada (pode ter um \n do scanf anterior)
-    getchar(); 
 }
