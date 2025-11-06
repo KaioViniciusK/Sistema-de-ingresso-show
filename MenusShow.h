@@ -1,18 +1,27 @@
 #ifndef MENUS_H
 #define MENUS_H
 
-typedef struct{
+typedef struct {
     int id;
     int ativo;
     float preco;
     char nomeEvento[50];
 } IngressoShow;
 
-void cadastrarShow();
-void excluirShow();
-void menuPrincipal();
-void menuAdministrador();
-int loginAdministrador();
+// Protótipos - funções do usuário 
 void listarShows();
+void pesquisarShow();
+void comprarIngresso();
+void sairPrograma();
 
-#endif;
+// Protótipos - funções do administrador 
+void cadastrarShow();
+void atualizarShow();
+void excluirShow();
+
+// Menus e login
+void menuPrincipal();        
+void menuAdministrador();    
+void loginAdministrador();
+
+#endif

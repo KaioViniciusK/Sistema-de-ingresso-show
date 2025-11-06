@@ -4,112 +4,124 @@
 #include <locale.h>
 #include "MenusShow.h"
  
-int loginAdministrador();
 void menuAdministrador();
 void listarShows();
 
+void pesquisarShow() {
+    printf("\n[EM DESENVOLVIMENTO] pesquisarShow()\n");
+}
+
+void comprarIngresso() {
+    printf("\n[EM DESENVOLVIMENTO] comprarIngresso()\n");
+}
+
+void sairPrograma() {
+    printf("\nEncerrando o programa...\n");
+    exit(0);
+}
+
+void atualizarShow() {
+    printf("\n[EM DESENVOLVIMENTO] atualizarShow()\n");
+}
+
+void consultarHistorico() {
+    printf("\n[EM DESENVOLVIMENTO] consultarHistorico()\n");
+}
+
+void cancelarVenda() {
+    printf("\n[EM DESENVOLVIMENTO] cancelarVenda()\n");
+}
+
+void loginAdministrador() {
+    int senha;
+
+    printf("\n===== LOGIN ADMINISTRADOR =====\n");
+    printf("Digite a senha: ");
+    scanf("%d", &senha);
+
+    if (senha == 123) {
+        printf("\nLogin bem-sucedido!\n");
+        menuAdministrador();
+    } else {
+        printf("\nSenha incorreta!\n");
+    }
+}
+
+
+
+
     // Fun��o que exibe o menu principal do sistema
 void menuPrincipal() {
-    int opcao;
+    int escolha;
+
+    // Vetor de ponteiros para funções do usuário
+    void (*operacoesUsuario[])() = {listarShows, pesquisarShow, comprarIngresso, loginAdministrador, sairPrograma};
 
     do {
-        printf("\n------------------------------------------\n");
-        printf("             Menu Mega Show \n");
-        printf("------------------------------------------\n");
-        printf("1 - Ver lista de todos os shows\n");
-        printf("2 - Pesquisar shows\n");
+        printf("\n=========== MENU USUÁRIO ===========\n");
+        printf("1 - Listar shows\n");
+        printf("2 - Pesquisar show\n");
         printf("3 - Comprar ingresso\n");
-        printf("4 - Acesso do administrador\n");
+        printf("4 - Login como administrador\n");
         printf("5 - Encerrar programa\n");
-        printf("------------------------------------------\n");
-        printf("Digite sua opcao: ");
-        scanf("%d", &opcao);
+        printf("Escolha uma opção: ");
+        scanf("%d", &escolha);
 
-        switch(opcao) {
-            case 1:
-                listarShows();
-                break;
-            case 2:
-                // pesquisarShow();
-                break;
-            case 3:
-                // comprarIngresso();
-                break;
-            case 4:
-                if (loginAdministrador()) {
-                    menuAdministrador();
-                }
-                break;
-            case 5:
-                printf("\nEncerrando o programa...\n");
-                break;
-            default:
-                printf("\nOpcao invalida! Tente novamente.\n");
+        if (escolha >= 1 && escolha <= 5) {
+            (*operacoesUsuario[escolha - 1])(); // Chama função correspondente
+        } else {
+            printf("\nOpção inválida!\n");
         }
-    } while (opcao != 5);
+
+    } while (escolha != 5);
 }
 
     // Menu exclusivo do administrador (aparece s� ap�s login)
 void menuAdministrador() {
-    int opcao;
+    int escolha;
+
+    void (*operacoesAdm[])() = {cadastrarShow, atualizarShow, excluirShow, menuPrincipal};
 
     do {
-        printf("\n------------------------------------------\n");
-        printf("          Menu do Administrador\n");
-        printf("------------------------------------------\n");
+        printf("\n=========== MENU ADMINISTRADOR ===========\n");
         printf("1 - Cadastrar show\n");
         printf("2 - Atualizar show\n");
         printf("3 - Excluir show\n");
-        printf("4 - Cancelar venda\n");
-        printf("5 - Consultar historico de vendas\n");
-        printf("6 - Voltar ao menu principal\n");
-        printf("------------------------------------------\n");
-        printf("Digite sua opcao: ");
-        scanf("%d", &opcao);
+        printf("4 - Voltar ao menu do usuário\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &escolha);
 
-        switch(opcao) {
-            case 1:
-                // cadastrarShow();
-                break;
-            case 2:
-                // atualizarShow();
-                break;
-            case 3:
-                // excluirShow();
-                break;
-            case 4:
-                // cancelarVenda();
-                break;
-            case 5:
-                // consultarHistorico();
-                break;
-            case 6:
-                printf("\nRetornando ao menu principal...\n");
-                break;
-            default:
-                printf("\nOpcao invalida! Tente novamente.\n");
+        if (escolha >= 1 && escolha <= 6) {
+            (*operacoesAdm[escolha - 1])();
+        } else {
+            printf("\nOpção inválida!\n");
         }
-    } while (opcao != 6);
+
+    } while (escolha != 6);
 }
 
-    // Fun��o que realiza o login do administrador
-int loginAdministrador() {
-    char usuario[30], senha[30];
 
-    printf("\n-------- Login do Administrador --------\n");
-    printf("Usuario: ");
-    scanf("%s", usuario);
-    printf("Senha: ");
-    scanf("%s", senha);
+void listarShows() {
+    IngressoShow show;
+    FILE *arquivo;
 
-    // Verifica usu�rio e senha para liberar acesso ao menu do administrador
-    if (strcmp(usuario, "admin") == 0 && strcmp(senha, "123") == 0) {
-        printf("\nLogin efetuado com sucesso!\n");
-        return 1; // sucesso
-    } else {
-        printf("\nUsuario ou senha incorretos!\n");
-        return 0; // falhou
+    arquivo = fopen("showdeBola.bin", "rb");
+
+    if (arquivo == NULL) {
+        printf("\nNenhum show cadastrado ainda!\n");
+        return;
     }
+
+    rewind(arquivo);
+    printf("\n===== LISTA DE SHOWS =====\n");
+
+    while (fread(&show, sizeof(IngressoShow), 1, arquivo) == 1) {
+        if (show.ativo == 1) { // Exibe apenas shows ativos
+            printf("ID: %d | Nome: %s | Preço: %.2f\n", show.id, show.nomeEvento, show.preco);
+        }
+    }
+
+    fclose(arquivo);
 }
 
 //CADASTRAR SHOW
@@ -134,7 +146,7 @@ void cadastrarShow(){
     //Se ID já existe, não deixa cadastrar.
     if(idExiste == 1){
         printf("ERRO! Já existe um show com o ID %d", show.id);
-        menu();
+        menuAdministrador();;
     }
 
     printf("\nNome: ");
