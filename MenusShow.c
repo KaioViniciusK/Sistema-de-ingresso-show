@@ -231,7 +231,6 @@ void cadastrarShow(){
     //Se ID já existe, não deixa cadastrar.
     if(idExiste == 1){
         printf("ERRO! Ja existe um show com o ID %d", show.id);
-        menuAdministrador();;
     }
 
     printf("\nNome: ");
