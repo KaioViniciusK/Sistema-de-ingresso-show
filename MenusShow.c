@@ -112,12 +112,31 @@ int loginAdministrador() {
     }
 }
 
+//CADASTRAR SHOW
 void cadastrarShow(){
-    IngressoShow show;
+    IngressoShow show, aux;
+    int idExiste;
 
     printf("\n====CADASTRAR SHOW====\n");
     printf("ID: ");
     scanf("%d", &show.id);
+
+    //Verifica se o ID já existe.
+    FILE *arquivo;
+    arquivo = fopen("showdeBola.bin", "rb");
+    while(fread(&aux, sizeof(IngressoShow), 1, arquivo) == 1){
+        if(aux.id == show.id){
+            idExiste  = 1;
+            break;
+        }
+    }
+    fclose(arquivo);
+    //Se ID já existe, não deixa cadastrar.
+    if(idExiste == 1){
+        printf("ERRO! Já existe um show com o ID %d", show.id);
+        menu();
+    }
+
     printf("\nNome: ");
     scanf("%s", show.nomeEvento);
     printf("\nPreco: ");
@@ -125,11 +144,41 @@ void cadastrarShow(){
     printf("\nEstá ativo? 1 - SIM | 2 - NAO: ");
     scanf("%d", &show.ativo);
 
-    FILE *arquivo;
+    //Se ID não estiver ocupado, grava normalmente.
     arquivo = fopen("showdeBola.bin", "ab");
     fwrite(&show, sizeof(IngressoShow), 1, arquivo);
 
     printf("\nSHOW CADASTRADO COM SUCESSO");
+
+    fclose(arquivo);
+}
+
+//EXCLUIR SHOW
+void excluirShow(){
+    IngressoShow show;
+    int idProcurado; 
+    int achou = 0;
+    printf("\n====EXCLUIR SHOW====\n");
+    printf("Digite o ID do show que você gostaria de exlcuir: ");
+    scanf("%d", &idProcurado);
+
+    FILE *arquivo;
+    arquivo = fopen("showdeBola.bin", "r+b"); //Abre o arquivo para leitura e escrita binária.
+    
+    //Procura o show no arquivo.
+    while(fread(&show, sizeof(IngressoShow), 1, arquivo)){
+        if (show.id == idProcurado && show.ativo == 1){
+            achou = 1;
+            show.ativo = 0; //Marca como incativo.
+            fseek(arquivo, -sizeof(IngressoShow), SEEK_CUR); //Volta 1 registro.
+            fwrite(&show, sizeof(IngressoShow), 1, arquivo);
+            printf("\nShow ID %d exlcuído com sucesso!!", idProcurado);
+            break;
+        }
+    }
+
+    if(!achou) //Caso não encontre o ID.
+        printf("\nShow não encontrado ou já inativo!\n");
 
     fclose(arquivo);
 }

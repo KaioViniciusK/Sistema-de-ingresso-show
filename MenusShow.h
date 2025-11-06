@@ -8,7 +8,8 @@ typedef struct{
     char nomeEvento[50];
 } IngressoShow;
 
-void cadastrarAluno();
+void cadastrarShow();
+void excluirShow();
 void menuPrincipal();
 void menuAdministrador();
 int loginAdministrador();
