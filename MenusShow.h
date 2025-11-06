@@ -1,15 +1,12 @@
 #ifndef MENUS_H
 #define MENUS_H
 
-typedef struct {
-    char artista[100];
-    char local[150];
-    char data[12];     
-    char horario[7];    
-    float valor;
-    int ingressosDisponiveis;
-    char categoria[50];
-} Show;
+typedef struct{
+    int id;
+    int ativo;
+    float preco;
+    char nomeEvento[50];
+} IngressoShow;
 
 
 void menuPrincipal();
