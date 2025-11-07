@@ -234,7 +234,7 @@ void cadastrarShow(){
     }
 
     printf("\nNome: ");
-    scanf("%s", show.nomeEvento);
+    scanf(" %[^\n]", show.nomeEvento);
     printf("\nPreco: ");
     scanf("%f", &show.preco);
     printf("\nEsta ativo? 1 - SIM | 2 - NAO: ");
