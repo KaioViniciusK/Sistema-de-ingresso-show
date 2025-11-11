@@ -8,7 +8,40 @@ void menuAdministrador();
 void listarShows();
 
 void pesquisarShow() {
-    printf("\n[EM DESENVOLVIMENTO] pesquisarShow()\n");
+    FILE *arquivo = fopen("showdeBola.bin", "rb");;
+    IngressoShow show;
+    int idBusca;
+    int encontrado = 0;
+
+    system("cls");
+    printf("\n Pesquisar show por ID\n");
+    printf("Digite o ID do show que deseja pesquisar: ");
+    scanf("%d", &idBusca);
+
+    if(arquivo == NULL){
+        printf("\n Pesquisar show por ID\n");
+        system("pause");
+        return;
+    }
+
+    while(fread(&show, sizeof(IngressoShow), 1, arquivo) == 1){
+        if(show.id == idBusca && show.ativo == 1){
+            encontrado = 1;
+            printf("\n--- Show Entrado ---\n");
+            printf("ID: %d\n", show.id);
+            printf("Nome: %s\n", show.nomeEvento);
+            printf("Preco: R$%2.f\n", show.preco);
+            break;
+        }
+    }
+
+    fclose(arquivo);
+
+    if(!encontrado){
+        printf("\nO show com ID %d nao foi encontrado", idBusca);
+    }
+
+    system("pause");
 }
 
 void comprarIngresso() {
@@ -67,7 +100,7 @@ void menuAdministrador() {
         printf("Escolha uma opcao: ");
         scanf("%d", &escolha);
 
-        if (escolha >= 1 && escolha <= 6) {
+        if (escolha >= 1 && escolha <= 4) { // Bug caso usuário digitasse 5 ou 6 corrigido
             (*operacoesAdm[escolha - 1])();
         } else {
             printf("\nOpcao invalida!\n");
