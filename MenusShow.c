@@ -7,56 +7,6 @@
 void menuAdministrador();
 void listarShows();
 
-void pesquisarShow() {
-    FILE *arquivo = fopen("showdeBola.bin", "rb");;
-    IngressoShow show;
-    int idBusca;
-    int encontrado = 0;
-
-    system("cls");
-    printf("\n Pesquisar show por ID\n");
-    printf("Digite o ID do show que deseja pesquisar: ");
-    scanf("%d", &idBusca);
-
-    if(arquivo == NULL){
-        printf("\n Pesquisar show por ID\n");
-        system("pause");
-        return;
-    }
-
-    while(fread(&show, sizeof(IngressoShow), 1, arquivo) == 1){
-        if(show.id == idBusca && show.ativo == 1){
-            encontrado = 1;
-            printf("\n--- Show Entrado ---\n");
-            printf("ID: %d\n", show.id);
-            printf("Nome: %s\n", show.nomeEvento);
-            printf("Preco: R$%2.f\n", show.preco);
-            break;
-        }
-    }
-
-    fclose(arquivo);
-
-    if(!encontrado){
-        printf("\nO show com ID %d nao foi encontrado", idBusca);
-    }
-
-    system("pause");
-}
-
-void comprarIngresso() {
-    printf("\n[EM DESENVOLVIMENTO] comprarIngresso()\n");
-}
-
-void consultarHistorico() {
-    printf("\n[EM DESENVOLVIMENTO] consultarHistorico()\n");
-}
-
-void cancelarVenda() {
-    printf("\n[EM DESENVOLVIMENTO] cancelarVenda()\n");
-}
-
-
     // Função que exibe o menu principal do sistema
 void menuPrincipal() {
     int escolha;
@@ -84,7 +34,7 @@ void menuPrincipal() {
     } while (escolha != 5);
 }
 
-    // Menu exclusivo do administrador (aparece s� ap�s login)
+    // Menu exclusivo do administrador (aparece apos login)
 void menuAdministrador() {
     int escolha;
 
@@ -100,7 +50,7 @@ void menuAdministrador() {
         printf("Escolha uma opcao: ");
         scanf("%d", &escolha);
 
-        if (escolha >= 1 && escolha <= 4) { // Bug caso usuário digitasse 5 ou 6 corrigido
+        if (escolha >= 1 && escolha <= 4) { 
             (*operacoesAdm[escolha - 1])();
         } else {
             printf("\nOpcao invalida!\n");
@@ -127,6 +77,7 @@ void loginAdministrador() {
      system("pause");
 }
 
+// Função Responsável por permitir a edição dos dados de um show já cadastrado.
 void atualizarShow() {
     FILE *arquivo;
     IngressoShow *shows = NULL;
@@ -158,7 +109,7 @@ void atualizarShow() {
 
     fread(shows, sizeof(IngressoShow), total, arquivo);
 
-    printf("\n===== SHOWS DISPONÍVEIS =====\n");
+    printf("\n===== SHOWS DISPONIVEIS =====\n");
     for (i = 0; i < total; i++) {
         if (shows[i].ativo == 1) {
             printf("ID: %d | Nome: %s | Preco: R$%.2f\n",
@@ -179,7 +130,7 @@ void atualizarShow() {
             fflush(stdin);
             scanf("%s", shows[i].nomeEvento);
 
-            printf("Preço atual: R$%.2f\nNovo preco: ", shows[i].preco);
+            printf("Preco atual: R$%.2f\nNovo preco: ", shows[i].preco);
             scanf("%f", &shows[i].preco);
 
             printf("Status atual: %s\n", shows[i].ativo == 1 ? "Ativo" : "Inativo");
@@ -215,7 +166,7 @@ void atualizarShow() {
     system("pause");
 }
 
-
+// Função responsável por exibir todos os shows ativos.
 void listarShows() {
     IngressoShow show;
     FILE *arquivo;
@@ -223,6 +174,8 @@ void listarShows() {
     arquivo = fopen("showdeBola.bin", "rb");
 
     system("cls");
+
+    
     if (arquivo == NULL) {
         printf("\nNenhum show cadastrado ainda!\n");
         return;
@@ -231,6 +184,7 @@ void listarShows() {
     rewind(arquivo);
     printf("\n===== LISTA DE SHOWS =====\n");
 
+    // Lê e exibe apenas os shows marcados como ativos
     while (fread(&show, sizeof(IngressoShow), 1, arquivo) == 1) {
         if (show.ativo == 1) { // Exibe apenas shows ativos
             printf("ID: %d | Nome: %s | Preco: R$%.2f\n", show.id, show.nomeEvento, show.preco);
@@ -246,7 +200,6 @@ void cadastrarShow(){
     IngressoShow show, aux;
     int idExiste;
 
-    system("cls");
     printf("\n====CADASTRAR SHOW====\n");
     printf("ID: ");
     scanf("%d", &show.id);
@@ -279,7 +232,6 @@ void cadastrarShow(){
 
     printf("\nSHOW CADASTRADO COM SUCESSO\n");
 
-    system("pause");
     fclose(arquivo);
 }
 
@@ -319,3 +271,137 @@ void excluirShow(){
         printf("\nEncerrando o programa...\n");
         exit(0);
     }
+
+void pesquisarShow() {
+    FILE *arquivo = fopen("showdeBola.bin", "rb");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo de shows.\n");
+        system("pause");
+        return;
+    }
+
+    IngressoShow show;
+    int opcao;
+    int idBusca;
+    char nomeBusca[50];
+    int encontrado = 0;
+
+    system("cls");
+    printf("\n=== PESQUISAR SHOW ===\n");
+    printf("Digite (1) para pesquisar por NOME ou (2) por ID: ");
+    scanf("%d", &opcao);
+
+    if (opcao == 2) {
+        printf("\nDigite o ID do show que deseja pesquisar: ");
+        scanf("%d", &idBusca);
+
+        while (fread(&show, sizeof(IngressoShow), 1, arquivo) == 1) {
+            if (show.id == idBusca && show.ativo == 1) {
+                encontrado = 1;
+                printf("\n--- SHOW ENCONTRADO ---\n");
+                printf("ID: %d\n", show.id);
+                printf("Nome: %s\n", show.nomeEvento);
+                printf("Preco: R$%.2f\n", show.preco);
+                break;
+            }
+        }
+    } 
+    else if (opcao == 1) {
+        printf("\nDigite o nome do show que deseja pesquisar: ");
+        scanf(" %[^\n]", nomeBusca);
+
+        while (fread(&show, sizeof(IngressoShow), 1, arquivo) == 1) {
+            if (strcmp(show.nomeEvento, nomeBusca) == 0 && show.ativo == 1) {
+                encontrado = 1;
+                printf("\n--- SHOW ENCONTRADO ---\n");
+                printf("ID: %d\n", show.id);
+                printf("Nome: %s\n", show.nomeEvento);
+                printf("Preco: R$%.2f\n", show.preco);
+                break;
+            }
+        }
+    } 
+    else {
+        printf("\nOpção inválida.\n");
+    }
+
+    fclose(arquivo);
+
+    if (!encontrado) {
+        printf("\nNenhum show encontrado com o critério informado.\n");
+    }
+
+    system("pause");
+}
+
+
+void comprarIngresso()
+{
+    FILE *arquivo = fopen("showdeBola.bin", "rb");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo de shows.\n");
+        return;
+    }
+
+    IngressoShow show;
+    int opcao;
+    int idBusca;
+    char nomeBusca[50];
+    int encontrado = 0;
+    int quantidadeIngressos;
+
+    printf("\nDigite (1) para pesquisar show pelo nome e (2) pelo ID:\n");
+    scanf("%d", &opcao);
+
+    if (opcao == 2) {
+        printf("Digite o ID do show que deseja pesquisar: ");
+        scanf("%d", &idBusca);
+
+        while (fread(&show, sizeof(IngressoShow), 1, arquivo) == 1) {
+            if (show.id == idBusca && show.ativo == 1) {
+                encontrado = 1;
+                printf("\n--- Show Encontrado ---\n");
+                printf("ID: %d\n", show.id);
+                printf("Nome: %s\n", show.nomeEvento);
+                printf("Preco: R$%.2f\n", show.preco);
+
+                printf("Quantos ingressos deseja comprar? ");
+                scanf("%d", &quantidadeIngressos);
+
+                float total = show.preco * quantidadeIngressos;
+                printf("O total vai ser de R$%.2f.\n", total);
+                break;
+            }
+        }
+    } 
+    else if (opcao == 1) {
+        printf("Digite o nome do show que deseja pesquisar: ");
+        scanf(" %[^\n]", nomeBusca);
+
+        while (fread(&show, sizeof(IngressoShow), 1, arquivo) == 1) {
+            if (strcmp(show.nomeEvento, nomeBusca) == 0 && show.ativo == 1) {
+                encontrado = 1;
+                printf("\n--- Show Encontrado ---\n");
+                printf("ID: %d\n", show.id);
+                printf("Nome: %s\n", show.nomeEvento);
+                printf("Preco: R$%.2f\n", show.preco);
+
+                printf("Quantos ingressos deseja comprar? ");
+                scanf("%d", &quantidadeIngressos);
+
+                float total = show.preco * quantidadeIngressos;
+                printf("O total vai ser de R$%.2f.\n", total);
+                break;
+            }
+        }
+    } 
+    else {
+        printf("Opcao invalida.\n");
+    }
+
+    fclose(arquivo);
+
+    if (!encontrado) {
+        printf("\nNenhum show encontrado com o critério informado.\n");
+    }
+}
