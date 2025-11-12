@@ -34,8 +34,7 @@ void menuPrincipal() {
     } while (escolha != 5);
 }
 
-    // Menu exclusivo do administrador (aparece apos login)
-    
+    // Menu exclusivo do administrador (aparece apos login) 
 void menuAdministrador() {
     int escolha;
 
@@ -52,7 +51,7 @@ void menuAdministrador() {
         scanf("%d", &escolha);
 
         if (escolha >= 1 && escolha <= 4) { 
-            (*operacoesAdm[escolha - 1])();
+            (*operacoesAdm[escolha - 1])(); // Chama funcao correspondente
         } else {
             printf("\nOpcao invalida!\n");
         }
@@ -60,6 +59,7 @@ void menuAdministrador() {
     } while (escolha != 6);
 }
 
+//funcao para login dos administradores
 void loginAdministrador() {
     int senha;
 
@@ -68,6 +68,7 @@ void loginAdministrador() {
     printf("Digite a senha: ");
     scanf("%d", &senha);
 
+    // Verificando a senha 
     if (senha == 123) {
         printf("\nLogin bem-sucedido!\n");
         menuAdministrador();
