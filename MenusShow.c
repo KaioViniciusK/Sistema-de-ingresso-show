@@ -26,7 +26,7 @@ void menuPrincipal() {
         scanf("%d", &escolha);
 
         if (escolha >= 1 && escolha <= 5) {
-            (*operacoesUsuario[escolha - 1])(); // Chama função correspondente
+            (*operacoesUsuario[escolha - 1])(); // Chama funcao correspondente
         } else {
             printf("\nOpcao Invalida!\n");
         }
@@ -127,7 +127,7 @@ void atualizarShow() {
             encontrado = 1;
 
             printf("\n--- Editando Show ID %d ---\n", shows[i].id);
-            
+
             printf("Nome atual: %s\nNovo nome: ", shows[i].nomeEvento);
             fgets(shows[i].nomeEvento, sizeof(shows[i].nomeEvento), stdin);
             shows[i].nomeEvento[strcspn(shows[i].nomeEvento, "\n")] = '\0';
