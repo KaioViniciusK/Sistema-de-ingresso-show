@@ -35,6 +35,7 @@ void menuPrincipal() {
 }
 
     // Menu exclusivo do administrador (aparece apos login)
+    
 void menuAdministrador() {
     int escolha;
 
@@ -198,44 +199,59 @@ void listarShows() {
 }
 
 //CADASTRAR SHOW
-void cadastrarShow(){
+void cadastrarShow() {
     IngressoShow show, aux;
-    int idExiste;
+    int idExiste = 0; // Inicializa a variável
+    FILE *arquivo;
 
-    printf("\n====CADASTRAR SHOW====\n");
+    printf("\n==== CADASTRAR SHOW ====\n");
     printf("ID: ");
     scanf("%d", &show.id);
 
-    //Verifica se o ID ja existe.
-    FILE *arquivo;
+    // Verifica se o ID já existe
     arquivo = fopen("showdeBola.bin", "rb");
-    while(fread(&aux, sizeof(IngressoShow), 1, arquivo) == 1){
-        if(aux.id == show.id){
-            idExiste  = 1;
-            break;
+    if (arquivo != NULL) {
+        while (fread(&aux, sizeof(IngressoShow), 1, arquivo) == 1) {
+            if (aux.id == show.id) {
+                idExiste = 1;
+                break;
+            }
         }
-    }
-    fclose(arquivo);
-    //Se ID ja existe, nao deixa cadastrar.
-    if(idExiste == 1){
-        printf("ERRO! Ja existe um show com o ID %d", show.id);
+        fclose(arquivo);
     }
 
+    // Se o ID já existe, exibe erro e volta ao menu
+    if (idExiste == 1) {
+        printf("\nERRO! Já existe um show com o ID %d.\n", show.id);
+        printf("Retornando ao menu do administrador...\n");
+        system("pause"); 
+        system("cls");   
+        return;          
+    }
+
+    // Continua normalmente o cadastro
     printf("\nNome: ");
     scanf(" %[^\n]", show.nomeEvento);
     printf("\nPreco: ");
     scanf("%f", &show.preco);
-    printf("\nEsta ativo? 1 - SIM | 2 - NAO: ");
+    printf("\nEstá ativo? 1 - SIM | 2 - NÃO: ");
     scanf("%d", &show.ativo);
 
-    //Se ID nao estiver ocupado, grava normalmente.
+    // Grava o show no arquivo
     arquivo = fopen("showdeBola.bin", "ab");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo para gravar.\n");
+        return;
+    }
+
     fwrite(&show, sizeof(IngressoShow), 1, arquivo);
-
-    printf("\nSHOW CADASTRADO COM SUCESSO\n");
-
     fclose(arquivo);
+
+    printf("\nSHOW CADASTRADO COM SUCESSO!\n");
+    system("pause");
+    system("cls");
 }
+
 
 //EXCLUIR SHOW
 void excluirShow(){
@@ -371,7 +387,18 @@ void comprarIngresso()
                 scanf("%d", &quantidadeIngressos);
 
                 float total = show.preco * quantidadeIngressos;
-                printf("O total vai ser de R$%.2f.\n", total);
+                printf("\nO total vai ser de R$%.2f.\n", total);
+
+                char confirmar;
+                printf("Deseja finalizar a compra? (S/N): ");
+                scanf(" %c", &confirmar);
+
+                if (confirmar == 'S' || confirmar == 's') {
+                    printf("\nCompra finalizada com sucesso!\n");
+                    printf("Você comprou %d ingresso(s) para o show '%s'.\n", quantidadeIngressos, show.nomeEvento);
+                } else {
+                    printf("\nCompra cancelada.\n");
+                }
                 break;
             }
         }
@@ -392,7 +419,18 @@ void comprarIngresso()
                 scanf("%d", &quantidadeIngressos);
 
                 float total = show.preco * quantidadeIngressos;
-                printf("O total vai ser de R$%.2f.\n", total);
+                printf("\nO total vai ser de R$%.2f.\n", total);
+
+                char confirmar;
+                printf("Deseja finalizar a compra? (S/N): ");
+                scanf(" %c", &confirmar);
+
+                if (confirmar == 'S' || confirmar == 's') {
+                    printf("\nCompra finalizada com sucesso!\n");
+                    printf("Você comprou %d ingresso(s) para o show '%s'.\n", quantidadeIngressos, show.nomeEvento);
+                } else {
+                    printf("\nCompra cancelada.\n");
+                }
                 break;
             }
         }
@@ -407,3 +445,4 @@ void comprarIngresso()
         printf("\nNenhum show encontrado com o criterio informado.\n");
     }
 }
+
