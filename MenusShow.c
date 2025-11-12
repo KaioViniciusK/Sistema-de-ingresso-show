@@ -44,8 +44,74 @@ void pesquisarShow() {
     system("pause");
 }
 
-void comprarIngresso() {
-    printf("\n[EM DESENVOLVIMENTO] comprarIngresso()\n");
+void comprarIngresso()
+{
+    FILE *arquivo = fopen("showdeBola.bin", "rb");
+    IngressoShow show;
+    int opção; //Para distinguir se o usuário vai buscar o show pelo nome ou ID
+    int idBusca;
+    char nomeBusca[50];
+    int encontrado=0;
+    int quantidadeIngressos; //Para saber quantos ingressos
+    
+    system("cls");
+    printf("\nDigite (1) para pesquisar show pelo nome e (2) pelo ID.\n");
+    scanf("%d",&opção);
+    
+    if(opção==2)
+    {
+        printf("Digite o ID do show que deseja pesquisar:");
+        scanf("%d",&idBusca);
+        while(fread(&show,sizeof(IngressoShow),1,arquivo) == 1)
+        {
+            if(show.id == idBusca && show.ativo == 1)
+            {
+            encontrado = 1;
+            printf("\n--- Show Encontrado ---\n");
+            printf("ID: %d\n", show.id);
+            printf("Nome: %s\n", show.nomeEvento);
+            printf("Preco: R$%2.f\n", show.preco);
+            printf("Quantos ingressos deseja comprar?\n");
+            scanf("%d",&quantidadeIngressos);
+            printf("O total vai ser de R$%d.",show.preco*quantidadeIngressos);
+            }
+        }
+    }
+    
+    if(opção==1)
+    {
+        printf("Digite o nome do show que deseja pesquisar:");
+        scanf(" %[^\n]",&idBusca);
+        while(fread(&show,sizeof(IngressoShow),1,arquivo) == 1)
+        {
+            if(show.nomeEvento == nomeBusca && show.ativo == 1)
+            {
+            encontrado = 1;
+            printf("\n--- Show Encontrado ---\n");
+            printf("ID: %d\n", show.id);
+            printf("Nome: %s\n", show.nomeEvento);
+            printf("Preco: R$%2.f\n", show.preco);
+            printf("Quantos ingressos deseja comprar?\n");
+            scanf("%d",&quantidadeIngressos);
+            printf("O total vai ser de R$%d.",show.preco*quantidadeIngressos);
+            }
+        }
+    }
+    
+    if(arquivo==NULL)
+    {
+        printf("\nDigite (1) para pesquisar show pelo nome e (2) pelo ID.\n");
+        system("pause");
+        return;
+    }
+    
+    fclose(arquivo);
+    
+    if(!encontrado){
+        printf("\nO show com ID %d nao foi encontrado", idBusca);
+    }
+    
+    system("pause");
 }
 
 void consultarHistorico() {
