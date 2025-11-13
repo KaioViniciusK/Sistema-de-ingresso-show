@@ -418,7 +418,7 @@ void comprarIngresso() {
 }
 
 
-// Função que exibe um show formatado (usada em várias partes do código)
+// Função que exibe um show formatado
 void mostrarShow(IngressoShow show) {
     printf("\n--- SHOW ENCONTRADO ---\n");
     printf("ID: %d\n", show.id);
