@@ -4,6 +4,7 @@
 typedef struct {
     int id;
     int ativo;
+    int ingressoDisponivel;
     float preco;
     char nomeEvento[50];
 } IngressoShow;
