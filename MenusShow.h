@@ -25,6 +25,9 @@ void menuPrincipal();
 void menuAdministrador();    
 void loginAdministrador();
 
-// Utilitarias 
+// Funções auxiliares reutilizáveis
+void mostrarShow(IngressoShow show);
+int buscarShowPorID(FILE *arquivo, int idBusca, IngressoShow *resultado);
+int buscarShowPorNome(FILE *arquivo, char *nomeBusca, IngressoShow *resultado);
 
 #endif
