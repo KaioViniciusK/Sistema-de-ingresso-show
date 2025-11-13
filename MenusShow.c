@@ -295,7 +295,7 @@ void pesquisarShow() {
     }
 
     IngressoShow show;
-    int opcao;                  
+    int opcao;                
     int idBusca;                
     char nomeBusca[50];
     int encontrado = 0;         // Flag para indicar se algum show foi encontrado
@@ -347,7 +347,6 @@ void pesquisarShow() {
         }
     } 
 
-    // OPÇÃO INVÁLIDA
     else {
         printf("\nOpcao invalida.\n");
     }
