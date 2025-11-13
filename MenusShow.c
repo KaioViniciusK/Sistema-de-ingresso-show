@@ -7,7 +7,14 @@
 void menuAdministrador();
 void listarShows();
 
-    // Funcao que exibe o menu principal do sistema
+void showEnc(int id, char* nome, float preco){
+    printf("\n--- SHOW ENCONTRADO ---\n");
+    printf("ID: %d\n", id);
+    printf("Nome: %s\n", nome);
+    printf("Preco: R$%.2f\n", preco);
+}
+
+// Funcao que exibe o menu principal do sistema
 void menuPrincipal() {
     int escolha;
 
@@ -273,7 +280,7 @@ void excluirShow(){
         if (show.id == idProcurado && show.ativo == 1){
             achou = 1;
             show.ativo = 0; //Marca como incativo.
-            fseek(arquivo, -sizeof(IngressoShow), SEEK_CUR); //Volta 1 registro.
+            fseek(arquivo, -(long)sizeof(IngressoShow), SEEK_CUR); //Volta 1 registro.
             fwrite(&show, sizeof(IngressoShow), 1, arquivo);
             printf("\nShow ID %d exlcuido com sucesso!!\n", idProcurado);
             break;
@@ -320,10 +327,7 @@ void pesquisarShow() {
             
             if (show.id == idBusca && show.ativo == 1) { // Compara o ID e verifica se o show está ativo
                 encontrado = 1;
-                printf("\n--- SHOW ENCONTRADO ---\n");
-                printf("ID: %d\n", show.id);
-                printf("Nome: %s\n", show.nomeEvento);
-                printf("Preco: R$%.2f\n", show.preco);
+                showEnc(show.id, show.nomeEvento, show.preco);
                 break;
             }
         }
@@ -341,10 +345,7 @@ void pesquisarShow() {
             */
             if (strcmp(show.nomeEvento, nomeBusca) == 0 && show.ativo == 1) {
                 encontrado = 1;
-                printf("\n--- SHOW ENCONTRADO ---\n");
-                printf("ID: %d\n", show.id);
-                printf("Nome: %s\n", show.nomeEvento);
-                printf("Preco: R$%.2f\n", show.preco);
+                showEnc(show.id, show.nomeEvento, show.preco);
                 break;
             }
         }
@@ -397,10 +398,7 @@ void comprarIngresso()
                 encontrado = 1;
 
                 //Exibe os resultados
-                printf("\n--- Show Encontrado ---\n");
-                printf("ID: %d\n", show.id);
-                printf("Nome: %s\n", show.nomeEvento);
-                printf("Preco: R$%.2f\n", show.preco);
+                showEnc(show.id, show.nomeEvento, show.preco);
 
                 // Pergunta quantos ingressos o usuário deseja comprar
                 printf("Quantos ingressos deseja comprar? ");
@@ -439,10 +437,7 @@ void comprarIngresso()
                 encontrado = 1;
 
                  // Exibe informações do show
-                printf("\n--- Show Encontrado ---\n");
-                printf("ID: %d\n", show.id);
-                printf("Nome: %s\n", show.nomeEvento);
-                printf("Preco: R$%.2f\n", show.preco);
+                showEnc(show.id, show.nomeEvento, show.preco);
 
                  // Pergunta quantidade de ingressos
                 printf("Quantos ingressos deseja comprar? ");
