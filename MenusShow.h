@@ -25,4 +25,6 @@ void menuPrincipal();
 void menuAdministrador();    
 void loginAdministrador();
 
+// Utilitarias 
+
 #endif

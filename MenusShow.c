@@ -294,7 +294,7 @@ void pesquisarShow() {
         return;
     }
 
-    IngressoShow show;
+    IngressoShow resultado;
     int opcao;                
     int idBusca;                
     char nomeBusca[50];
@@ -305,61 +305,32 @@ void pesquisarShow() {
     printf("Digite (1) para pesquisar por NOME ou (2) por ID: ");
     scanf("%d", &opcao);
 
-    //PESQUISA POR ID
     if (opcao == 2) {
         printf("\nDigite o ID do show que deseja pesquisar: ");
         scanf("%d", &idBusca);
-
-        // Lê o arquivo registro por registro
-        while (fread(&show, sizeof(IngressoShow), 1, arquivo) == 1) {
-            
-            if (show.id == idBusca && show.ativo == 1) { // Compara o ID e verifica se o show está ativo
-                encontrado = 1;
-                printf("\n--- SHOW ENCONTRADO ---\n");
-                printf("ID: %d\n", show.id);
-                printf("Nome: %s\n", show.nomeEvento);
-                printf("Preco: R$%.2f\n", show.preco);
-                printf("Ingressos disponíveis: %d\n", show.ingressoDisponivel);
-                break;
-            }
-        }
+        encontrado = buscarShowPorID(arquivo, idBusca, &resultado);
     } 
-
-    // PESQUISA POR NOME
     else if (opcao == 1) {
         printf("\nDigite o nome do show que deseja pesquisar: ");
         scanf(" %[^\n]", nomeBusca);
-
-        while (fread(&show, sizeof(IngressoShow), 1, arquivo) == 1) {   // Lê cada registro do arquivo
-            /* 
-                strcmp retorna 0 quando as strings são iguais.
-                Aqui compara nome digitado com o nome do show no arquivo.
-            */
-            if (strcmp(show.nomeEvento, nomeBusca) == 0 && show.ativo == 1) {
-                encontrado = 1;
-                printf("\n--- SHOW ENCONTRADO ---\n");
-                printf("ID: %d\n", show.id);
-                printf("Nome: %s\n", show.nomeEvento);
-                printf("Preco: R$%.2f\n", show.preco);
-                printf("Ingressos disponíveis: %d\n", show.ingressoDisponivel);
-                break;
-            }
-        }
+        encontrado = buscarShowPorNome(arquivo, nomeBusca, &resultado);
     } 
-
     else {
         printf("\nOpcao invalida.\n");
+        fclose(arquivo);
+        system("pause");
+        return;
     }
+
+    if (encontrado)
+        mostrarShow(resultado);
+    else
+        printf("\nNenhum show encontrado com o criterio informado.\n");
 
     fclose(arquivo);
-
-    // Se nenhum registro foi encontrado
-    if (!encontrado) {
-        printf("\nNenhum show encontrado com o criterio informado.\n");
-    }
-
     system("pause");
 }
+
 
 
 
@@ -378,75 +349,105 @@ void comprarIngresso() {
     printf("\nDigite (1) para buscar por NOME ou (2) por ID: ");
     scanf("%d", &opcao);
 
-    // Entrada da forma de busca
     if (opcao == 2) {
         printf("Digite o ID do show: ");
         scanf("%d", &idBusca);
+        encontrado = buscarShowPorID(arquivo, idBusca, &show);
     } else if (opcao == 1) {
         printf("Digite o nome do show: ");
         scanf(" %[^\n]", nomeBusca);
+        encontrado = buscarShowPorNome(arquivo, nomeBusca, &show);
     } else {
         printf("\nOpção inválida.\n");
         fclose(arquivo);
         return;
     }
 
-    // Procura o show e realiza a compra
-    while (fread(&show, sizeof(IngressoShow), 1, arquivo) == 1) {
-        if ((opcao == 2 && show.id == idBusca && show.ativo == 1) ||
-            (opcao == 1 && strcmp(show.nomeEvento, nomeBusca) == 0 && show.ativo == 1)) {
-
-            encontrado = 1;
-            printf("\n--- SHOW ENCONTRADO ---\n");
-            printf("ID: %d\nNome: %s\nPreço: R$%.2f\nIngressos disponíveis: %d\n",
-                   show.id, show.nomeEvento, show.preco, show.ingressoDisponivel);
-
-            // Verifica disponibilidade
-            if (show.ingressoDisponivel <= 0) {
-                printf("\nIngressos esgotados para este show!\n");
-                break;
-            }
-
-            printf("Quantos ingressos deseja comprar? ");
-            scanf("%d", &quantidade);
-
-            // Valida quantidade
-            if (quantidade > show.ingressoDisponivel) {
-                printf("\nNão há ingressos suficientes! Restam apenas %d.\n", show.ingressoDisponivel);
-                break;
-            }
-
-            float total = show.preco * quantidade;
-            printf("Total: R$%.2f\nConfirmar compra? (S/N): ", total);
-
-            char confirma;
-            scanf(" %c", &confirma);
-
-            // Confirma e atualiza o arquivo
-            if (confirma == 'S' || confirma == 's') {
-                show.ingressoDisponivel -= quantidade;
-
-                fseek(arquivo, -sizeof(IngressoShow), SEEK_CUR);
-                fwrite(&show, sizeof(IngressoShow), 1, arquivo);
-
-                printf("\nCompra concluída!\n");
-                printf("Você comprou %d ingresso(s). Restam %d disponíveis.\n",
-                       quantidade, show.ingressoDisponivel);
-
-                if (show.ingressoDisponivel == 0)
-                    printf("Os ingressos para este show acabaram!\n");
-            } else {
-                printf("\nCompra cancelada.\n");
-            }
-            break;
-        }
+    if (!encontrado) {
+        printf("\nNenhum show encontrado.\n");
+        fclose(arquivo);
+        system("pause");
+        return;
     }
 
-    if (!encontrado)
-        printf("\nNenhum show encontrado.\n");
+    mostrarShow(show);
+
+    // Verifica disponibilidade
+    if (show.ingressoDisponivel <= 0) {
+        printf("\nIngressos esgotados para este show!\n");
+        fclose(arquivo);
+        return;
+    }
+
+    printf("Quantos ingressos deseja comprar? ");
+    scanf("%d", &quantidade);
+
+    // Valida quantidade
+    if (quantidade > show.ingressoDisponivel) {
+        printf("\nNão há ingressos suficientes! Restam apenas %d.\n", show.ingressoDisponivel);
+        fclose(arquivo);
+        return;
+    }
+
+    float total = show.preco * quantidade;
+    printf("Total: R$%.2f\nConfirmar compra? (S/N): ", total);
+
+    char confirma;
+    scanf(" %c", &confirma);
+
+    if (confirma == 'S' || confirma == 's') {
+        // Atualiza o show no arquivo
+        show.ingressoDisponivel -= quantidade;
+
+        // Volta uma posição no arquivo antes de gravar
+        fseek(arquivo, -sizeof(IngressoShow), SEEK_CUR);
+        fwrite(&show, sizeof(IngressoShow), 1, arquivo);
+
+        printf("\nCompra concluída!\n");
+        printf("Você comprou %d ingresso(s). Restam %d disponíveis.\n",
+               quantidade, show.ingressoDisponivel);
+
+        if (show.ingressoDisponivel == 0)
+            printf("Os ingressos para este show acabaram!\n");
+    } else {
+        printf("\nCompra cancelada.\n");
+    }
 
     fclose(arquivo);
     system("pause");
 }
 
+
+// Função que exibe um show formatado (usada em várias partes do código)
+void mostrarShow(IngressoShow show) {
+    printf("\n--- SHOW ENCONTRADO ---\n");
+    printf("ID: %d\n", show.id);
+    printf("Nome: %s\n", show.nomeEvento);
+    printf("Preco: R$%.2f\n", show.preco);
+    printf("Ingressos disponíveis: %d\n", show.ingressoDisponivel);
+}
+
+int buscarShowPorID(FILE *arquivo, int idBusca, IngressoShow *resultado) {
+    IngressoShow show;
+    rewind(arquivo); // Garante leitura do início
+    while (fread(&show, sizeof(IngressoShow), 1, arquivo) == 1) {
+        if (show.id == idBusca && show.ativo == 1) {
+            *resultado = show;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+int buscarShowPorNome(FILE *arquivo, char *nomeBusca, IngressoShow *resultado) {
+    IngressoShow show;
+    rewind(arquivo);
+    while (fread(&show, sizeof(IngressoShow), 1, arquivo) == 1) {
+        if (strcmp(show.nomeEvento, nomeBusca) == 0 && show.ativo == 1) {
+            *resultado = show;
+            return 1;
+        }
+    }
+    return 0;
+}
 
