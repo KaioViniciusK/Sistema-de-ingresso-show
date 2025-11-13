@@ -147,7 +147,7 @@ void atualizarShow() {
             // Atualiza o registro no arquivo
             fseek(arquivo, i * sizeof(IngressoShow), SEEK_SET);
             fwrite(&shows[i], sizeof(IngressoShow), 1, arquivo);
-            printf("\n? Show atualizado com sucesso!\n");
+            printf("\n Show atualizado com sucesso!\n");
             break;
         }
     }
@@ -417,7 +417,6 @@ void comprarIngresso() {
     system("pause");
 }
 
-
 // Função que exibe um show formatado
 void mostrarShow(IngressoShow show) {
     printf("\n--- SHOW ENCONTRADO ---\n");
@@ -447,7 +446,7 @@ int buscarShowPorNome(FILE *arquivo, char *nomeBusca, IngressoShow *resultado) {
             *resultado = show;
             return 1;
         }
-    }
+    }   
     return 0;
 }
 
